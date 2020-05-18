@@ -152,7 +152,7 @@ void screenRender(SDL_Renderer *renderer)
 void pathRender(SDL_Renderer *renderer,vector<sNode*>path)
 {
     SDL_SetRenderDrawColor(renderer,0,0,255,255);
-    for(int i=1;i<path.size();i++)
+    for(int i=1; i<path.size(); i++)
     {
         SDL_Rect pathRect;
         pathRect.x=path[i]->x;
@@ -162,26 +162,7 @@ void pathRender(SDL_Renderer *renderer,vector<sNode*>path)
         SDL_RenderFillRect(renderer,&pathRect);
     }
 }
-/*void visitedBlockRender(SDL_Renderer *renderer,sNode*nodes)
-{
-   SDL_SetRenderDrawColor(renderer,0,100,100,255);
 
-   for(int i=0; i<nMapWidth; i++)
-    {
-        for(int j=0; j<nMapHeight; j++)
-        {
-            if(nodes[j*nMapWidth + i].bVisited ==true)
-            {
-                SDL_Rect visitedBlockRect;
-                visitedBlockRect.x=nodes[j*nMapWidth+i].x;
-                visitedBlockRect.y=nodes[j*nMapWidth+i].y;
-                visitedBlockRect.h=scale;
-                visitedBlockRect.w=scale;
-                SDL_RenderFillRect(renderer,&visitedBlockRect);
-            }
-        }
-    }
-}   */
 bool gameOver(Snake snake)
 {
     if(snake.head.x<0||snake.head.y<0||snake.head.x>scale*(scale-1)||snake.head.y>scale*(scale-1))
@@ -227,15 +208,15 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     for(int i=0; i<snake.tail.size(); i++)
     {
         nodes[snake.tail[i].x/24+snake.tail[i].y].bObstacle=1;
-       // cout<<snake.tail[i].x/24<<","<<snake.tail[i].y/24;
-       // cout<<"is obstacle"<<endl;
+        // cout<<snake.tail[i].x/24<<","<<snake.tail[i].y/24;
+        // cout<<"is obstacle"<<endl;
     }
-   // nodes[snake.head.x/24+snake.head.y].bObstacle=1;
+    // nodes[snake.head.x/24+snake.head.y].bObstacle=1;
     auto distance=[](sNode*a,sNode*b)
     {
         //return max(fabs(a->x-b->x),fabs(a->y-b->y));
         return fabs((a->x-b->x))+fabs((a->y-b->y));
-       // return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
+        // return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
     };
     auto heuristic=[distance](sNode*a,sNode*b)
     {
@@ -298,10 +279,10 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
             p=p->parent;
         }
     }
-  /*  for(int i=path.size()-1;i>=0;i--)
-    {
-        cout<<path[i]->x/24<<","<<path[i]->y/24<<endl;
-    }  */
+    /*  for(int i=path.size()-1;i>=0;i--)
+      {
+          cout<<path[i]->x/24<<","<<path[i]->y/24<<endl;
+      }  */
     return path;
 }
 void getPath(vector<sNode*>path,Snake&snake)
@@ -313,27 +294,26 @@ void getPath(vector<sNode*>path,Snake&snake)
     }
     else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y==snake.head.y)
     {
-          return;
+        return;
     }
     else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y<snake.head.y&&snake.status!=DOWN)
     {
         snake.status=UP;
+    }
+    else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x<snake.head.x&&snake.status!=RIGHT)
+    {
+        snake.status=LEFT;
 
     }
-     else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x<snake.head.x&&snake.status!=RIGHT)
-     {
-         snake.status=LEFT;
+    else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x>snake.head.x&&snake.status!=LEFT)
+    {
+        snake.status=RIGHT;
+    }
+    else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y>snake.head.y&&snake.status!=UP)
+    {
+        snake.status=DOWN;
 
-     }
-     else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x>snake.head.x&&snake.status!=LEFT)
-     {
-         snake.status=RIGHT;
-     }
-     else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y>snake.head.y&&snake.status!=UP)
-     {
-         snake.status=DOWN;
-
-     }
+    }
 }
 void getPath2(vector<sNode*>path,Snake&snake)
 {
@@ -344,7 +324,7 @@ void getPath2(vector<sNode*>path,Snake&snake)
     }
     else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y==snake.head.y)
     {
-          return;
+        return;
     }
     else if(path[pathSize-1]->y>snake.head.y)
     {
@@ -367,7 +347,7 @@ void getPath2(vector<sNode*>path,Snake&snake)
 
 int main(int argc, char* argv[])
 {
-    cout<<"Just Do It";
+    cout<<"Just Do It"<<endl;
     srand(time(0));
     TTF_Init();
     SDL_Window* window;
@@ -427,7 +407,7 @@ int main(int argc, char* argv[])
     nodeStart=&nodes[snake.head.x/24+snake.head.y];
     nodeEnd=&nodes[food.x/24+food.y];
 
-    cout<<"test ok ok"<<endl;
+    cout<<"Start!!"<<endl;
     nodeStart=&nodes[snake.head.x/24+snake.head.y];
     nodeEnd=&nodes[food.x/24+food.y];
     vector<sNode*>path;
@@ -435,11 +415,9 @@ int main(int argc, char* argv[])
 
     while(true)
     {
-        // cout<<nodeStart->x<<" "<<snake.head.x<<endl;
-        //SDL_Delay(100);
         preHead.x=snake.head.x;
         preHead.y=snake.head.y;
-        // cout<<snake.head.x/24<<" "<<snake.head.y/24<<" "<<snake.status<<endl;
+
         if(SDL_PollEvent(&event))
         {
             if(event.type==SDL_QUIT)
@@ -469,12 +447,11 @@ int main(int argc, char* argv[])
         {
             //path.clear();
             //std::vector<sNode*>().swap(path);
-           // nodeStart=&nodes[snake.head.x/24+snake.head.y];
-           // nodeEnd=&nodes[food.x/24+food.y];
+            // nodeStart=&nodes[snake.head.x/24+snake.head.y];
+            // nodeEnd=&nodes[food.x/24+food.y];
             //path=solveAstar(nodeStart,nodeEnd,nodes,snake);
 
-            getPath2(path,snake);
-            //tracePath(path,snake);
+            getPath(path,snake);
             path.pop_back();
 
         }
@@ -486,7 +463,6 @@ int main(int argc, char* argv[])
         {
             snakeTemp.tail.push_back(snake.tail[i]);
         }
-
         if(snake.status==UP)
         {
             snake.head.y-=scale;
@@ -506,7 +482,6 @@ int main(int argc, char* argv[])
 
         if(food.x==snake.head.x&&food.y==snake.head.y)
         {
-
             snake.tailLength++;
             snake.tail.push_back(preHead);
             food= spawnFood(snake);
@@ -516,9 +491,20 @@ int main(int argc, char* argv[])
             nodeStart=&nodes[snake.head.x/24+snake.head.y];
             nodeEnd=&nodes[food.x/24+food.y];
             path=solveAstar(nodeStart,nodeEnd,nodes,snake);
-        //    cout<<"path size is"<<path.size()<<endl;
-        //   cout<<"start node is "<<nodeStart->x/24<<","<<nodeStart->y/24<<endl;
-        //   cout<<"node end is "<<nodeEnd->x/24<<","<<nodeEnd->y/24<<endl;
+            cout<<"---------find next path------------"<<endl;
+            if(path.size()==0)
+            {
+                cout<<"Can't find path!!"<<endl;
+                break;
+            }
+            else
+            {
+                cout<<"path size is"<<path.size()<<endl;
+                cout<<"start node is "<<"("<<nodeStart->x/24<<","<<nodeStart->y/24<<")"<<endl;
+                cout<<"node end is "<<nodeEnd->x/24<<","<<nodeEnd->y/24<<endl;
+                for(int i=path.size()-1; i>=0; i--)
+                    cout<<"("<<path[i]->x/24<<","<<path[i]->y/24<<")"<<endl;
+            }
         }
         for(int i=1; i<snake.tailLength; i++)
         {
