@@ -212,7 +212,7 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
         // cout<<snake.tail[i].x/24<<","<<snake.tail[i].y/24;
         // cout<<"is obstacle"<<endl;
     }
-    // nodes[snake.head.x/24+snake.head.y].bObstacle=1;
+     nodes[snake.head.x/24+snake.head.y].bObstacle=1;
     auto distance=[](sNode*a,sNode*b)
     {
         //return max(fabs(a->x-b->x),fabs(a->y-b->y));
