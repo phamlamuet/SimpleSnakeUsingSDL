@@ -64,7 +64,7 @@ void snakeRender(SDL_Renderer* renderer,SDL_Rect snakeRec,Snake &snake )
         snakeRec.y=snake.tail[i].y;
         SDL_RenderFillRect(renderer,&snakeRec);
     }
-
+    SDL_SetRenderDrawColor(renderer,255,0,255,255);
     snakeRec.x=snake.head.x;
     snakeRec.y=snake.head.y;
     SDL_RenderFillRect(renderer,&snakeRec);
@@ -152,6 +152,7 @@ void screenRender(SDL_Renderer *renderer)
 void pathRender(SDL_Renderer *renderer,vector<sNode*>path)
 {
     SDL_SetRenderDrawColor(renderer,0,0,255,255);
+    int pathSize=path.size();
     for(int i=1; i<path.size(); i++)
     {
         SDL_Rect pathRect;
@@ -216,7 +217,7 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     {
         //return max(fabs(a->x-b->x),fabs(a->y-b->y));
         return fabs((a->x-b->x))+fabs((a->y-b->y));
-        // return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
+        //return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
     };
     auto heuristic=[distance](sNode*a,sNode*b)
     {
@@ -227,8 +228,8 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     nodeStart->fGlobalGoal=heuristic(nodeStart,nodeEnd);
     /** list of nodes to be tested ->> openlist */
     list<sNode*> listNotTestedNodes;
-    listNotTestedNodes.push_back(nodeStart); /** startNode is the first to be tested*/
-    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd  )// Find absolutely shortest path // && nodeCurrent != nodeEnd)
+    listNotTestedNodes.push_back(nodeStart); /** startNode is the firwst to be tested*/
+    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd )// Find absolutely shortest path : && nodeCurrent != nodeEnd)
     {
         // Sort Untested nodes by global goal, so lowest is first
         listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs)
@@ -279,6 +280,7 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
             p=p->parent;
         }
     }
+
     /*  for(int i=path.size()-1;i>=0;i--)
       {
           cout<<path[i]->x/24<<","<<path[i]->y/24<<endl;
@@ -303,7 +305,6 @@ void getPath(vector<sNode*>path,Snake&snake)
     else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x<snake.head.x&&snake.status!=RIGHT)
     {
         snake.status=LEFT;
-
     }
     else if(path[pathSize-1]->y==snake.head.y&&path[pathSize-1]->x>snake.head.x&&snake.status!=LEFT)
     {
@@ -312,7 +313,6 @@ void getPath(vector<sNode*>path,Snake&snake)
     else if(path[pathSize-1]->x==snake.head.x&&path[pathSize-1]->y>snake.head.y&&snake.status!=UP)
     {
         snake.status=DOWN;
-
     }
 }
 void getPath2(vector<sNode*>path,Snake&snake)
@@ -387,8 +387,6 @@ int main(int argc, char* argv[])
     }
     sNode*nodeStart=&nodes[3];  /**start node */
     sNode*nodeEnd=&nodes[8];   /**end node */
-
-
     /**make connection */
     for(int x=0; x<nMapWidth; x++)
     {
@@ -415,6 +413,7 @@ int main(int argc, char* argv[])
 
     while(true)
     {
+        //SDL_Delay(100);
         preHead.x=snake.head.x;
         preHead.y=snake.head.y;
 
@@ -450,6 +449,11 @@ int main(int argc, char* argv[])
             // nodeStart=&nodes[snake.head.x/24+snake.head.y];
             // nodeEnd=&nodes[food.x/24+food.y];
             //path=solveAstar(nodeStart,nodeEnd,nodes,snake);
+            if(path.size()==0)
+            {
+                cout<<"CAN'T FIND PATH-GIVE UP!!"<<endl;
+                break;
+            }
 
             getPath(path,snake);
             path.pop_back();
@@ -479,7 +483,6 @@ int main(int argc, char* argv[])
         {
             snake.head.y+=scale;
         }
-
         if(food.x==snake.head.x&&food.y==snake.head.y)
         {
             snake.tailLength++;
@@ -491,20 +494,14 @@ int main(int argc, char* argv[])
             nodeStart=&nodes[snake.head.x/24+snake.head.y];
             nodeEnd=&nodes[food.x/24+food.y];
             path=solveAstar(nodeStart,nodeEnd,nodes,snake);
-            cout<<"---------find next path------------"<<endl;
-            if(path.size()==0)
-            {
-                cout<<"Can't find path!!"<<endl;
-                break;
-            }
-            else
-            {
+
+                cout<<"---------find next path------------"<<endl;
                 cout<<"path size is"<<path.size()<<endl;
                 cout<<"start node is "<<"("<<nodeStart->x/24<<","<<nodeStart->y/24<<")"<<endl;
-                cout<<"node end is "<<nodeEnd->x/24<<","<<nodeEnd->y/24<<endl;
+                cout<<"end node is "<<"("<<nodeEnd->x/24<<","<<nodeEnd->y/24<<")"<<endl;
                 for(int i=path.size()-1; i>=0; i--)
                     cout<<"("<<path[i]->x/24<<","<<path[i]->y/24<<")"<<endl;
-            }
+
         }
         for(int i=1; i<snake.tailLength; i++)
         {
