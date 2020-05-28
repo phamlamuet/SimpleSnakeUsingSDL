@@ -178,81 +178,7 @@ Snake snakeInit(Snake &snake,ToaDo &preHead)
 
     return snake;
 }
-void getLoopMove(Snake &snake)
-{
-    if(snake.head.x/24<1&&snake.head.y/24<1)
-    {
-        snake.status=RIGHT;
-    }
-    else if(snake.head.x/24>22&&snake.head.y/24<1)
-    {
-        snake.status=DOWN;
-    }
-    else if(snake.head.x/24>22&&snake.head.y/24>22)
-    {
-        snake.status=LEFT;
-    }
-    else if(snake.head.x/24<1&&snake.head.y/24%2!=0)
-    {
-        snake.status=UP;
-    }
-    else if(snake.head.x==0&&snake.head.y/24%2==0)
-    {
-        snake.status=RIGHT;
-    }
-    else if(snake.head.x/24==22&&snake.head.y/24%2==0&&snake.head.y!=0)
-    {
-        snake.status=UP;
-    }
-    else if(snake.head.x/24==22&&snake.head.y/24%2!=0)
-    {
-        snake.status=LEFT;
-    }
-}
-void getRandomMove(Snake &snake,ToaDo &food)
-{
-  if(snake.head.y==food.y&&snake.head.x<food.x&&snake.status!=LEFT)
-  {
-      snake.status=RIGHT;
-  }
-  else if(snake.head.y==food.y&&snake.head.x>food.x&&snake.status!=RIGHT)
-  {
-     snake.status=LEFT;
-  }
-  else if(snake.head.x==food.x&&snake.head.y<food.y&&snake.status!=UP)
-  {
-      snake.status=DOWN;
-  }
-  else if(snake.head.x==food.x&&snake.head.y>food.y&&snake.status!=DOWN)
-  {
-      snake.status=UP;
-  }
-  else if(snake.head.x<food.x&&snake.head.y<food.y)
-  {
-      if(snake.status!=UP)
-      snake.status=DOWN;
-      else snake.status=RIGHT;
-  }
-  else if(snake.head.x>food.x&&snake.head.y<food.y)
-  {
-     if(snake.status!=UP)
-      snake.status=DOWN;
-      else snake.status=RIGHT;
-  }
-  else if(snake.head.x<food.x&&snake.head.y>food.y)
-  {
-     if(snake.status!=DOWN)
-      snake.status=UP;
-      else snake.status=RIGHT;
-  }
-  else if(snake.head.x>food.x&&snake.head.y>food.y)
-  {
-     if(snake.status!=DOWN)
-      snake.status=UP;
-      else snake.status=LEFT;
-  }
 
-}
 int main(int argc, char* argv[])
 {
     cout<<"justDoIt";
@@ -279,44 +205,11 @@ int main(int argc, char* argv[])
     ToaDo food;
     food=spawnFood(snake);
     SDL_Rect foodRect;
-
-    sNode *nodes=new sNode[nMapWidth*nMapHeight]; /** array of nodes */
-
-    for(int x=0;x<nMapWidth;x++)
-    {
-        for(int y=0;y<nMapHeight;y++)
-        {
-            nodes[y * nMapWidth + x].x = x*scale;
-            nodes[y * nMapWidth + x].y = y*scale;
-            nodes[y * nMapWidth + x].bObstacle = false;
-            nodes[y * nMapWidth + x].parent = nullptr;
-            nodes[y * nMapWidth + x].bVisited = false;
-        }
-    }
-    sNode*nodeStart=&nodes[3];  /**start node */
-    sNode*nodeEnd=&nodes[8];   /**end node */
-
-    /**make connection */
-    for(int x=0; x<nMapWidth; x++)
-    {
-        for(int y=0; y<nMapHeight; y++)
-        {
-            if(y>0)
-                nodes[y*nMapWidth + x].vecNeighbours.push_back(&nodes[(y - 1) * nMapWidth + (x + 0)]);
-            if(y<nMapHeight-1)
-                nodes[y*nMapWidth + x].vecNeighbours.push_back(&nodes[(y + 1) * nMapWidth + (x + 0)]);
-            if (x>0)
-                nodes[y*nMapWidth + x].vecNeighbours.push_back(&nodes[(y + 0) * nMapWidth + (x - 1)]);
-            if(x<nMapWidth-1)
-                nodes[y*nMapWidth + x].vecNeighbours.push_back(&nodes[(y + 0) * nMapWidth + (x + 1)]);
-        }
-    }
     while(true)
     {
-
+        SDL_Delay(70);
         preHead.x=snake.head.x;
         preHead.y=snake.head.y;
-        cout<<snake.head.x/24<<" "<<snake.head.y/24<<" "<<snake.status<<endl;
         if(SDL_PollEvent(&event))
         {
             if(event.type==SDL_QUIT)
@@ -346,11 +239,6 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        else
-        {
-            getLoopMove(snake);
-        }
-
         Snake snakeTemp;
         snakeTemp.head=preHead;
         snakeTemp.tailLength=snake.tailLength;
