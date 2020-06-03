@@ -163,7 +163,26 @@ void pathRender(SDL_Renderer *renderer,vector<sNode*>path)
         SDL_RenderFillRect(renderer,&pathRect);
     }
 }
+void visitedNodesRender(SDL_Renderer *renderer,sNode*nodes)
+{
+    SDL_SetRenderDrawColor(renderer,0,250,0,0);
+    for(int x=0; x<nMapWidth; x++)
+    {
+        for(int y=0; y<nMapHeight; y++)
+        {
+            if( nodes[y*nMapWidth + x].bVisited == true)
+            {
+                SDL_Rect visitedNodeRect;
+                visitedNodeRect.x=nodes[y*nMapWidth + x].x;
+                visitedNodeRect.y=nodes[y*nMapWidth + x].y;
+                visitedNodeRect.w=scale;
+                visitedNodeRect.h=scale;
+                SDL_RenderFillRect(renderer,&visitedNodeRect);
+            }
+        }
+    }
 
+}
 bool gameOver(Snake snake)
 {
     if(snake.head.x<0||snake.head.y<0||snake.head.x>scale*(scale-1)||snake.head.y>scale*(scale-1))
@@ -206,16 +225,14 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
             nodes[y*nMapWidth+x].bObstacle=false;
         }
     }
-    for(int i=0; i<snake.tail.size(); i++)
+    for(int i=1; i<snake.tail.size(); i++)
     {
-        nodes[snake.tail[i].x/24+snake.tail[i].y].bObstacle=1;
-        // cout<<snake.tail[i].x/24<<","<<snake.tail[i].y/24;
-        // cout<<"is obstacle"<<endl;
+        nodes[snake.tail[i].x/scale+snake.tail[i].y].bObstacle=1;
     }
-     nodes[snake.head.x/24+snake.head.y].bObstacle=1;
+    //nodes[snake.head.x/24+snake.head.y].bObstacle=1;
     auto distance=[](sNode*a,sNode*b)
     {
-        //return max(fabs(a->x-b->x),fabs(a->y-b->y));
+        // return max(fabs(a->x-b->x),fabs(a->y-b->y));
         return fabs((a->x-b->x))+fabs((a->y-b->y));
         //return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
     };
@@ -228,8 +245,8 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     nodeStart->fGlobalGoal=heuristic(nodeStart,nodeEnd);
     /** list of nodes to be tested ->> openlist */
     list<sNode*> listNotTestedNodes;
-    listNotTestedNodes.push_back(nodeStart); /** startNode is the firwst to be tested*/
-    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd )// Find absolutely shortest path : && nodeCurrent != nodeEnd)
+    listNotTestedNodes.push_back(nodeStart); /** startNode is the first to be tested*/
+    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd  )// Find absolutely shortest path comment: && nodeCurrent != nodeEnd)
     {
         // Sort Untested nodes by global goal, so lowest is first
         listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs)
@@ -413,7 +430,7 @@ int main(int argc, char* argv[])
 
     while(true)
     {
-        //SDL_Delay(100);
+        //SDL_Delay(60);
         preHead.x=snake.head.x;
         preHead.y=snake.head.y;
 
@@ -495,12 +512,12 @@ int main(int argc, char* argv[])
             nodeEnd=&nodes[food.x/24+food.y];
             path=solveAstar(nodeStart,nodeEnd,nodes,snake);
 
-                cout<<"---------find next path------------"<<endl;
-                cout<<"path size is"<<path.size()<<endl;
-                cout<<"start node is "<<"("<<nodeStart->x/24<<","<<nodeStart->y/24<<")"<<endl;
-                cout<<"end node is "<<"("<<nodeEnd->x/24<<","<<nodeEnd->y/24<<")"<<endl;
-                for(int i=path.size()-1; i>=0; i--)
-                    cout<<"("<<path[i]->x/24<<","<<path[i]->y/24<<")"<<endl;
+            cout<<"---------find next path------------"<<endl;
+            cout<<"path size is"<<path.size()<<endl;
+            cout<<"start node is "<<"("<<nodeStart->x/24<<","<<nodeStart->y/24<<")"<<endl;
+            cout<<"end node is "<<"("<<nodeEnd->x/24<<","<<nodeEnd->y/24<<")"<<endl;
+            for(int i=path.size()-1; i>=0; i--)
+                cout<<"("<<path[i]->x/24<<","<<path[i]->y/24<<")"<<endl;
 
         }
         for(int i=1; i<snake.tailLength; i++)
@@ -520,16 +537,19 @@ int main(int argc, char* argv[])
             snakeRender(renderer,snakeRect,snakeTemp);
             break;
         }
-        else
-        {
-            snakeRender(renderer,snakeRect,snake);
-        }
-        foodRender(renderer,foodRect,food);
+      //  else
+       // {
+          //  snakeRender(renderer,snakeRect,snake);
+       // }
+       // foodRender(renderer,foodRect,food);
         screenRender(renderer);
 
+        visitedNodesRender(renderer,nodes);
+        foodRender(renderer,foodRect,food);
+        snakeRender(renderer,snakeRect,snake);
         pathRender(renderer,path);
         scoreRender(renderer,snake);
-        //visitedBlockRender(renderer,nodes);
+
         SDL_RenderPresent(renderer);
         SDL_SetRenderDrawColor(renderer, 105, 105, 105, 255);
         SDL_RenderClear(renderer);
