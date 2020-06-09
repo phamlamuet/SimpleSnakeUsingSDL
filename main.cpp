@@ -181,7 +181,6 @@ void visitedNodesRender(SDL_Renderer *renderer,sNode*nodes)
             }
         }
     }
-
 }
 bool gameOver(Snake snake)
 {
@@ -220,8 +219,8 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
         {
             nodes[y*nMapWidth+x].fGlobalGoal=INFINITY;
             nodes[y*nMapWidth+x].fLocalGoal=INFINITY;
-            nodes[y*nMapWidth + x].bVisited = false;
-            nodes[y*nMapWidth + x].parent = nullptr;
+            nodes[y*nMapWidth + x].bVisited =false;
+            nodes[y*nMapWidth + x].parent =nullptr;
             nodes[y*nMapWidth+x].bObstacle=false;
         }
     }
@@ -232,13 +231,14 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     //nodes[snake.head.x/24+snake.head.y].bObstacle=1;
     auto distance=[](sNode*a,sNode*b)
     {
-        // return max(fabs(a->x-b->x),fabs(a->y-b->y));
+         //return max(fabs(a->x-b->x),fabs(a->y-b->y));
         return fabs((a->x-b->x))+fabs((a->y-b->y));
         //return sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y));
     };
     auto heuristic=[distance](sNode*a,sNode*b)
     {
         return distance(a,b);
+        //return 0;
     };
     sNode *nodeCurrent=nodeStart;
     nodeStart->fLocalGoal=0.0f;
@@ -246,15 +246,9 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
     /** list of nodes to be tested ->> openlist */
     list<sNode*> listNotTestedNodes;
     listNotTestedNodes.push_back(nodeStart); /** startNode is the first to be tested*/
-    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd  )// Find absolutely shortest path comment: && nodeCurrent != nodeEnd)
+    while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd   )// Find absolutely shortest path comment: && nodeCurrent != nodeEnd)
     {
-        // Sort Untested nodes by global goal, so lowest is first
-        listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs)
-        {
-            return lhs->fGlobalGoal < rhs->fGlobalGoal;
-        } );
-
-        // Front of listNotTestedNodes is potentially the lowest distance node. Our
+         // Front of listNotTestedNodes is potentially the lowest distance node. Our
         // list may also contain nodes that have been visited, so ditch these...
         while(!listNotTestedNodes.empty() && listNotTestedNodes.front()->bVisited)
             listNotTestedNodes.pop_front();
@@ -262,6 +256,14 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
         // ...or abort because there are no valid nodes left to test
         if (listNotTestedNodes.empty())
             break;
+
+        // Sort Untested nodes by global goal, so lowest is first
+        listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs)
+        {
+            return lhs->fGlobalGoal < rhs->fGlobalGoal;
+
+        } );
+
 
         nodeCurrent = listNotTestedNodes.front();
         nodeCurrent->bVisited = true; // We only explore a node once
@@ -275,7 +277,7 @@ vector<sNode*> solveAstar(sNode*nodeStart,sNode*nodeEnd,sNode*nodes,Snake &snake
                 listNotTestedNodes.push_back(nodeNeighbour);
 
             // Calculate the neighbours potential lowest parent distance
-            float fPossiblyLowerGoal = nodeCurrent->fLocalGoal + distance(nodeCurrent, nodeNeighbour);
+            float fPossiblyLowerGoal = (nodeCurrent->fLocalGoal + distance(nodeCurrent, nodeNeighbour));
 
             // If choosing to path through this node is a lower distance than what
             // the neighbour currently has set, update the neighbour to use this node
@@ -430,7 +432,7 @@ int main(int argc, char* argv[])
 
     while(true)
     {
-        //SDL_Delay(60);
+       // SDL_Delay(60);
         preHead.x=snake.head.x;
         preHead.y=snake.head.y;
 
